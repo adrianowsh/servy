@@ -3,19 +3,19 @@ defmodule Servy.Router do
 
   @pages_path Path.expand("../page", __DIR__)
 
-  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
+  def route(%{method: "GET", path: "/wildthings"} = conv) do
     %Conv{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+  def route(%{method: "GET", path: "/bears"} = conv) do
     %Conv{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(%Conv{method: "GET", path: "/bears" <> id} = conv) do
+  def route(%{method: "GET", path: "/bears" <> id} = conv) do
     %Conv{conv | status: 200, resp_body: "Bear #{id}"}
   end
 
-  def route(%Conv{method: "POST", path: "/bears" = conv}) do
+  def route(%{method: "POST", path: "/bears" <> id = conv}) do
     %Conv{conv | status: 201, resp_body: "Bear #{id}"}
   end
 
@@ -27,7 +27,7 @@ defmodule Servy.Router do
       |> handle_file(conv)
   end
 
-  def route(%Conv{method: "DELETE", path: "/bear" <> _id} = conv) do
+  def route(%{method: "DELETE", path: "/bear" <> _id} = conv) do
     %Conv{conv | status: 403, resp_body: "Deleting a bear is forbidden"}
   end
 

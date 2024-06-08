@@ -1,6 +1,6 @@
 # Servy
 
-**TODO: Add description**
+**TODO: This application handles HTTP Requests
 
 ## Installation
 
