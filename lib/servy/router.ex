@@ -1,22 +1,24 @@
 defmodule Servy.Router do
   alias Servy.Conv
+  alias Servy.BearController
 
   @pages_path Path.expand("../page", __DIR__)
 
-  def route(%{method: "GET", path: "/wildthings"} = conv) do
+  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     %Conv{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(%{method: "GET", path: "/bears"} = conv) do
-    %Conv{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+    BearController.index(conv)
   end
 
-  def route(%{method: "GET", path: "/bears" <> id} = conv) do
-    %Conv{conv | status: 200, resp_body: "Bear #{id}"}
+  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
   end
 
-  def route(%{method: "POST", path: "/bears" <> id = conv}) do
-    %Conv{conv | status: 201, resp_body: "Bear #{id}"}
+  def route(%Conv{method: "POST", path: "/bears/", params: params} = conv) do
+    BearController.create(conv, params)
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
@@ -27,11 +29,11 @@ defmodule Servy.Router do
       |> handle_file(conv)
   end
 
-  def route(%{method: "DELETE", path: "/bear" <> _id} = conv) do
+  def route(%Conv{method: "DELETE", path: "/bears/" <> _id} = conv) do
     %Conv{conv | status: 403, resp_body: "Deleting a bear is forbidden"}
   end
 
-  def route(%{path: path} = conv) do
+  def route(%Conv{path: path} = conv) do
     %Conv{conv | resp_body: "No #{path} here!", status: 404}
   end
 

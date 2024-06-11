@@ -2,15 +2,39 @@ defmodule Servy.Parser do
   alias Servy.Conv, as: Conv
 
   def parse(request) do
-    [mehtod, path, _] =
-      request
-      |> String.split("\n", trim: true)
-      |> List.first()
-      |> String.split(" ", trim: true)
+    [top, params_string] = String.split(request, "\n\n")
+
+    [request_line | header_lines] = String.split(top, "\n")
+
+    [mehtod, path, _] = String.split(request_line, " ")
+
+    headers = parse_headers(header_lines, %{})
+
+    params =
+      headers["Content-Type"]
+      |> parse_params(params_string)
 
     %Conv{
       method: mehtod,
-      path: path
+      path: path,
+      headers: headers,
+      params: params
     }
   end
+
+  defp parse_headers([head | tail], headers) do
+    [key, value] = String.split(head, ": ")
+    headers = Map.put(headers, key, value)
+    parse_headers(tail, headers)
+  end
+
+  defp parse_headers([], headers), do: headers
+
+  defp parse_params("application/x-www-form-urlencoded", params_string) do
+    params_string
+    |> String.trim()
+    |> URI.decode_query()
+  end
+
+  defp parse_params(_, _), do: %{}
 end

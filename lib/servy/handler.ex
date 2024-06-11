@@ -3,7 +3,7 @@ defmodule Servy.Handler do
    Handles HTTP Requests
   """
 
-  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  import Servy.Plugins, only: [rewrite_path: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
   import Servy.Router, only: [route: 1]
 
@@ -15,7 +15,6 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> rewrite_path
-    |> log
     |> parse
     |> route
     |> track
@@ -51,6 +50,7 @@ GET /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
+
 """
 
 _request_bear_removed = """
@@ -58,6 +58,7 @@ DELETE /bear/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
+
 """
 
 _request_big_foot = """
@@ -72,4 +73,23 @@ GET /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
+
+"""
+
+_request_bears = """
+GET /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+"""
+
+_post_bear = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Baloo&type=Brown
 """
